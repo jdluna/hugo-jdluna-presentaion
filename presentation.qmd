@@ -252,7 +252,7 @@ Works on Windows via WSL, too!
 
 ## Q & A
 
-![](images/duke 2000 pix con sonrisa -04.jpg){width=30%}
+![](images/duke-2000-pix-con-sonrisa-04.jpg){width=30%}
 &nbsp;&nbsp;&nbsp;&nbsp;
 
 Thank you!  
