@@ -1,0 +1,32 @@
+# Quarto build artifacts
+_site/
+presentation.html
+presentation_files/
+*.qmd~
+*.qmd#
+
+# R temporary files
+.Rhistory
+.RData
+.Ruserdata
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Logs
+*.log
+
+# Node modules (if using any)
+node_modules/
+
+# Python cache (if using any)
+__pycache__/
+*.pyc 

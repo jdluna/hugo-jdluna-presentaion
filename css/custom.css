@@ -1,0 +1,7 @@
+.reveal h2 {
+    font-size: 1.4em !important; /* Slide title size */
+  }
+  
+  .reveal h3 {
+    font-size: 1.2em !important; /* Section subtitle size */
+  }

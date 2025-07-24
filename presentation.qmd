@@ -1,0 +1,259 @@
+---
+title: "SDKMAN: One Tool to Rule All Your Java Versions"
+subtitle: "From JAVA_HOME nightmares to effortless version juggling"
+author: "Jhosep Luna"
+date: "2025-07-24"
+format:
+  revealjs:
+    theme: simple
+    backgroundColor: "#fff7e6"
+    slideNumber: true
+    highlightStyle: dracula
+    color: "#281b08"
+    font: "Fira Sans"
+    slide-number: true
+    toc: false
+    incremental: false
+    transition: slide
+    mermaid:
+      theme: default
+    css: css/custom.css
+---
+
+## Welcome
+
+![](https://cdn.iconscout.com/icon/free/png-256/free-java-60-1174953.png){width=20%}
+&nbsp;&nbsp;&nbsp;&nbsp;
+![](https://images.seeklogo.com/logo-png/43/1/sdkman-logo-png_seeklogo-438238.png){width=25%}
+
+### SDKMAN: One Tool to Rule All Your Java Versions
+
+A short journey from **manual installs** to **instant version switching**.
+
+---
+
+## Agenda
+
+1. Why multiple JDKs?
+2. Manual installs (Windows, macOS/Linux)
+3. JAVA_HOME & PATH issues
+4. SDKMAN intro & benefits
+5. Live demo: install/switch versions
+6. Tips, quirks & resources
+
+---
+
+## Why do we juggle JDKs?
+
+- Legacy projects stuck on Java 8
+- New micro‑services on Java 21 LTS
+- Early–access builds for testing (e.g. Loom, Valhalla)
+- Toolchains (Maven, Gradle, Kotlin, …) with specific requirements
+
+> _"It compiles on my machine"_ – every dev before discovering version managers
+
+---
+
+## Manual Installation – Windows
+
+![](https://www.codejava.net/images/articles/javacore/set-java-home/System_properties_dialog.png){width=55%}
+
+1. **Download & unzip** the JDK installer/zip
+2. Dig into *System Properties → Environment Variables*
+3. Create `JAVA_HOME`
+4. Append `%JAVA_HOME%\bin` to `PATH`
+5. Open a _new_ terminal → `java -version`
+
+---
+
+## Manual Installation – Windows (cont.)
+
+![](https://www.codejava.net/images/articles/javacore/set-java-home/New_JAVA_HOME_system_variable.png){width=55%}
+
+> Repeat *every time* you need another version… and remember to switch it back!
+
+---
+
+## Manual Installation – macOS / Linux
+
+```bash
+# 1. Download archive
+wget https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.tar.gz
+
+# 2. Extract
+sudo tar -C /opt -xzf jdk-21_linux-x64_bin.tar.gz
+
+# 3. Configure shell
+echo 'export JAVA_HOME=/opt/jdk-21' >> ~/.zshrc
+echo 'export PATH="$JAVA_HOME/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+java -version
+```
+
+Same dance for every version ⚙️
+
+---
+
+## Manual Process – Flowchart
+
+```mermaid
+flowchart TD
+    A[Download JDK tar/zip] --> B[Extract files]
+    B --> C[Choose install directory]
+    C --> D[Set JAVA_HOME]
+    D --> E[Update PATH]
+    E --> F[Test with `java -version`]
+    F --> G{Need another version?}
+    G -- Yes --> A
+    G -- No --> H[Done]
+```
+
+---
+
+## Pain Points
+
+- Tedious & error‑prone
+- Colliding with other tools editing `PATH`
+- Hard to automate in CI/CD & container images
+- Impossible to keep *all* versions around without confusion
+
+---
+
+## Meet **SDKMAN!**
+
+> *"The Software Development Kit Manager for the JVM ecosystem"*
+
+- Single‑line install
+- List, install, switch, remove JDKs & many other SDKs (Maven, Gradle…)
+- Works on **macOS, Linux, WSL** (and anywhere Bash/Zsh runs)
+- Maintains its own directory – no clashing with system JDK
+
+---
+
+## Installing SDKMAN (macOS / Linux / WSL)
+
+```bash
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+```
+
+That’s it! 🎉
+
+---
+
+## Installing SDKMAN (Windows Git bash)
+
+- Download portable version of 7zip
+- Download portable version of Git bash
+- Extract 7zip to a folder
+- Extract Git bash to a folder
+- Run Git bash
+
+---
+
+## Installing SDKMAN (Windows Git bash) (cont.)
+
+- Run the following commands
+
+```bash
+ln -s "/c/Users/demo/Downloads/7-ZipPortable/App/7-Zip/7z.exe" "$HOME/bin/zip"
+cd ~
+vi .bashrc
+# Add the following line to the end of the file
+export PATH="$HOME/bin:$PATH"
+# Save and exit
+:wq
+# Source the file
+source ~/.bashrc
+```
+
+- Install SDKMAN
+
+```bash
+export SDKMAN_DIR="/c/Users/demo/Downloads/sdkman" && curl -s "https://get.sdkman.io" | bash
+# Add the following line in a new terminal
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+```
+
+That’s it! 🎉
+
+---
+
+
+## First steps
+
+```bash
+sdk list java      # Show all available builds
+sdk install java 21.0.4-tem  # Install Temurin 21
+sdk use java 17.0.10-zulu    # Switch current session to Zulu 17
+sdk default java 8.0.402-oracle # Persist choice
+```
+
+Everything lives under `~/.sdkman/candidates/java/…`
+
+---
+
+## SDKMAN Process – Flowchart
+
+```mermaid
+flowchart LR
+    I[curl get.sdkman.io | bash] --> J["sdk list java"]
+    J --> K[sdk install java <id>]
+    K --> L[sdk use/default java <id>]
+    L --> M[java -version]
+```
+
+---
+
+## Demo Time ⏱️
+
+*(demo switching between JDK 11 ↔ 17 ↔ 21 ↔ EA build)*
+
+---
+
+## Installing Versions **Not in the Catalog**
+
+1. **Download** the vendor tarball (e.g. a legacy JDK 6)
+2. Place it in a temp folder
+3. Run:
+   ```bash
+   sdk install java 6.0-local /path/to/jdk6.tar.gz
+   ```
+4. SDKMAN registers it as a *local* candidate:
+   ```bash
+   sdk list java | grep local
+   >>> 6.0-local         local        installed
+   ```
+
+Works on Windows via WSL, too!
+
+---
+
+## Tips & Gotchas
+
+- `sdk flush tmp` clears failed downloads
+- `sdk offline enable` for air‑gapped builds
+- Use **CI** images pre‑loaded with SDKMAN cache for speed
+- On bare Windows, use SDKMAN via **WSL** or try `jabba`, `jEnv`, or the official Microsoft Build of OpenJDK
+
+---
+
+## Key Takeaways
+
+- Multiple Java versions are a reality → embrace it
+- Manual installs scale **poorly**
+- **SDKMAN!** makes installation & switching trivial
+- Even off‑catalog or legacy builds can be managed
+
+> One tool to rule them all 🧙‍♂️
+
+---
+
+## Q & A
+
+![](images/duke 2000 pix con sonrisa -04.jpg){width=30%}
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+Thank you!  
+[@jdluna](mailto:jhosep@example.com) · [sdkman.io](https://sdkman.io)

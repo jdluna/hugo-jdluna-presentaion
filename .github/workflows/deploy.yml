@@ -1,0 +1,73 @@
+name: Deploy Quarto Presentation to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: |
+          quarto install tinytex
+
+      - name: Build presentation
+        run: |
+          quarto render presentation.qmd --to revealjs
+
+      - name: Create index.html for GitHub Pages
+        run: |
+          echo '<!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta http-equiv="refresh" content="0; url=presentation.html">
+            <title>SDKMAN Presentation - Redirecting...</title>
+          </head>
+          <body>
+            <p>Redirecting to <a href="presentation.html">presentation</a>...</p>
+          </body>
+          </html>' > index.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: |
+            presentation.html
+            index.html
+            presentation_files/
+            images/
+            css/
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 
