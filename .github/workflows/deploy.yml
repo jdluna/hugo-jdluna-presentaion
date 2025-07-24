@@ -36,9 +36,21 @@ jobs:
         run: |
           quarto render presentation.qmd --to revealjs
 
+      - name: Create deployment directory
+        run: |
+          mkdir -p _deploy
+
+      - name: Copy files to deployment directory
+        run: |
+          cp presentation.html _deploy/
+          cp -r presentation_files _deploy/
+          cp -r images _deploy/
+          cp -r css _deploy/
+
       - name: Create index.html for GitHub Pages
         run: |
-          echo '<!DOCTYPE html>
+          cat > _deploy/index.html << 'EOF'
+          <!DOCTYPE html>
           <html>
           <head>
             <meta charset="utf-8">
@@ -48,17 +60,20 @@ jobs:
           <body>
             <p>Redirecting to <a href="presentation.html">presentation</a>...</p>
           </body>
-          </html>' > index.html
+          </html>
+          EOF
+
+      - name: List deployment files
+        run: |
+          echo "Deployment directory contents:"
+          ls -la _deploy/
+          echo "--- presentation_files contents ---"
+          ls -la _deploy/presentation_files/ || echo "presentation_files not found"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: |
-            presentation.html
-            index.html
-            presentation_files/
-            images/
-            css/
+          path: _deploy
 
   deploy:
     environment:
