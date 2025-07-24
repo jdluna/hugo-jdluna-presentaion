@@ -88,6 +88,22 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
+      - name: Check GitHub Pages status
+        run: |
+          echo "Checking if GitHub Pages is enabled..."
+          echo "If deployment fails, please enable GitHub Pages at:"
+          echo "https://github.com/${{ github.repository }}/settings/pages"
+          echo "Set Source to 'GitHub Actions'"
+
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Deployment status
+        if: steps.deployment.outcome == 'failure'
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Please enable GitHub Pages at: https://github.com/${{ github.repository }}/settings/pages"
+          echo "Set Source to 'GitHub Actions'"
+          exit 1 
