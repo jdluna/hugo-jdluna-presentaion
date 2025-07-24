@@ -154,6 +154,21 @@ That’s it! 🎉
 
 ## Installing SDKMAN (Windows Git bash) (cont.)
 
+![](images/7zip/7zip-install-1.jpg){width=30%}
+&nbsp;&nbsp;&nbsp;&nbsp;
+![](images/7zip/7zip-install-2.jpg){width=30%}
+&nbsp;&nbsp;&nbsp;&nbsp;
+![](images/7zip/7zip-install-3.jpg){width=30%}
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+![](images/gitbash/gitbash-install-1.jpg){width=30%}
+&nbsp;&nbsp;&nbsp;&nbsp;
+![](images/gitbash/gitbash-install-2.jpg){width=30%}
+
+---
+
+## Installing SDKMAN (Windows Git bash) (cont.)
+
 - Run the following commands
 
 ```bash
@@ -190,7 +205,7 @@ sdk use java 17.0.10-zulu    # Switch current session to Zulu 17
 sdk default java 8.0.402-oracle # Persist choice
 ```
 
-Everything lives under `~/.sdkman/candidates/java/…`
+Everything lives under `/c/Users/demo/Downloads/sdkman/candidates/java/…`
 
 ---
 
